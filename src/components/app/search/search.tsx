@@ -23,7 +23,6 @@ export class Search extends Component<SearchProps, SearchState> {
   };
 
   render() {
-    const request = this.props.request;
     const handleSearch = this.props.handleSearch;
 
     return (
@@ -38,7 +37,10 @@ export class Search extends Component<SearchProps, SearchState> {
           />
         </div>
         <div className={styles.wrapperButton}>
-          <button onClick={() => handleSearch(this.state.input)}>
+          <button
+            className={styles.searchButton}
+            onClick={() => handleSearch(this.state.input)}
+          >
             <div className={styles.apply}>
               <div className={`${styles.scale} ${styles.rotate1}`}>s</div>
               <div className={`${styles.scale} ${styles.rotate2}`}>e</div>

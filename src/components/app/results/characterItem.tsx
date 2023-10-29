@@ -12,7 +12,7 @@ type CharacterProps = {
 
 export class CharacterItem extends Component<CharacterProps> {
   render() {
-    const {name, status, type, location, image, species} = this.props;
+    const { name, status, type, location, image, species } = this.props;
 
     return (
       <div className={styles.card}>

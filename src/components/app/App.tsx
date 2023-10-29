@@ -5,7 +5,7 @@ import { CharacterItem } from './results/characterItem';
 import loader from '../../assets/loader.gif';
 import { Character } from '../../types/character';
 
-type AppProps = null;
+type AppProps = Record<string, never>;
 
 type AppState = {
   request: string;
@@ -22,12 +22,16 @@ class App extends React.Component<AppProps, AppState> {
       loading: true,
     };
   }
-  
+
   componentDidMount() {
     this.handleSearch(this.state.request);
   }
 
-  handleSearch = async (request:string) => {
+  throwError = () => {
+    throw new Error('This is a test error.');
+  };
+
+  handleSearch = async (request: string) => {
     this.setState({ loading: true });
     const apiUrl = `https://rickandmortyapi.com/api/character/`;
     if (request.trim() === '') {
@@ -67,14 +71,17 @@ class App extends React.Component<AppProps, AppState> {
     return (
       <div className={styles.main}>
         <div className={styles.search}>
-          <Search request={this.state.request} handleSearch = {this.handleSearch}/>
+          <Search
+            request={this.state.request}
+            handleSearch={this.handleSearch}
+          />
         </div>
         <div className={styles.results}>
           {this.state.loading ? (
             <div className={styles.loader}>
               <img src={loader} />
             </div>
-          ) : (this.state.results ? (
+          ) : this.state.results ? (
             this.state.results.map((person) => {
               return (
                 <CharacterItem
@@ -92,7 +99,10 @@ class App extends React.Component<AppProps, AppState> {
             <div className={styles.notFound}>
               <p>Sorry, Not Found Results On Your Request</p>
             </div>
-          ))}
+          )}
+          <div className={styles.error} onClick={this.throwError}>
+            <p>Throw Error</p>
+          </div>
         </div>
       </div>
     );
