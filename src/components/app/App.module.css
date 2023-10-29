@@ -21,3 +21,8 @@
 
 .loader {
 }
+.notFound{
+  font-family: 'Fredoka', sans-serif;
+	font-size: 60px;
+  color: rgba(37, 61, 29, 0.7);
+}

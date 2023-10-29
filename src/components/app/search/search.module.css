@@ -68,7 +68,7 @@ button:active {
 	outline: none;
 }
 
-button a {
+button .apply {
 	font-family: 'Fredoka', sans-serif;
 	font-size: 30px;
 	text-decoration: none;
