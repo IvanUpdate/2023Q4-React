@@ -11,6 +11,7 @@ type AppState = {
   request: string;
   results: Array<Character> | null;
   loading: boolean;
+  error: Error | null;
 };
 
 class App extends React.Component<AppProps, AppState> {
@@ -20,16 +21,13 @@ class App extends React.Component<AppProps, AppState> {
       request: localStorage.getItem('request') || '',
       results: null,
       loading: true,
+      error: null,
     };
   }
 
   componentDidMount() {
     this.handleSearch(this.state.request);
   }
-
-  throwError = () => {
-    throw new Error('This is a test error.');
-  };
 
   handleSearch = async (request: string) => {
     this.setState({ loading: true });
@@ -68,6 +66,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
+    if (this.state.error) throw this.state.error;
     return (
       <div className={styles.main}>
         <div className={styles.search}>
@@ -100,7 +99,10 @@ class App extends React.Component<AppProps, AppState> {
               <p>Sorry, Not Found Results On Your Request</p>
             </div>
           )}
-          <div className={styles.error} onClick={this.throwError}>
+          <div
+            className={styles.error}
+            onClick={() => this.setState({ error: new Error() })}
+          >
             <p>Throw Error</p>
           </div>
         </div>
