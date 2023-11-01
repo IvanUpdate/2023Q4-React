@@ -23,13 +23,11 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // You can log the error to the console or send it to a tracking service here
     console.error(error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
-      // Render a fallback UI when an error occurs
       return (
         <div>
           <h1>Something went wrong.</h1>
@@ -37,8 +35,6 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
         </div>
       );
     }
-
-    // If there's no error, render the children as usual
     return this.props.children;
   }
 }
