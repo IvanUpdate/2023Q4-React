@@ -15,14 +15,6 @@
   margin: 0 auto;
 }
 
-.search {
-  height: 200px;
-  margin: auto;
-}
-
-.loader {
-}
-
 .notFound {
   font-family: 'Fredoka', sans-serif;
   font-size: 60px;

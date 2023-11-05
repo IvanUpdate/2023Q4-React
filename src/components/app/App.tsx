@@ -1,114 +1,120 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './App.module.css';
-import { Search } from './search/search';
-import { CharacterItem } from './results/characterItem';
-import loader from '../../assets/loader.gif';
+import Search from './search/search';
 import { Character } from '../../types/character';
+import { fetchData } from '../../services/data/dataService';
+import Pagination from '../pagination/pagination';
+import Loader from '../loader/loader';
+import NotFound from './pages/notFound';
+import { Route, Routes, useSearchParams } from 'react-router-dom';
+import Layout from '../layout/layout';
+import Details from './details/details';
 
-type AppProps = Record<string, never>;
+const App: React.FC = () => {
+  const [request, setRequest] = useState<string>(
+    localStorage.getItem('request') || ''
+  );
+  const [results, setResults] = useState<Array<Character> | null>(null);
+  const [quantityResults, setQuantityResults] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [qtyPerPage, setQtyPerPage] = useState<number>(20);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [character, setCharacter] = useState<Character | null>(null);
 
-type AppState = {
-  request: string;
-  results: Array<Character> | null;
-  loading: boolean;
-  error: Error | null;
-};
+  const currentPage = Number(searchParams.get('page')) || 1;
 
-class App extends React.Component<AppProps, AppState> {
-  constructor(props: AppProps) {
-    super(props);
-    this.state = {
-      request: localStorage.getItem('request') || '',
-      results: null,
-      loading: true,
-      error: null,
-    };
-  }
+  const handleSearch = async (request: string) => {
+    setRequest(request);
+    setLoading(true);
+    localStorage.setItem('request', request);
 
-  componentDidMount() {
-    this.handleSearch(this.state.request);
-  }
-
-  handleSearch = async (request: string) => {
-    this.setState({ loading: true });
-    const apiUrl = `https://rickandmortyapi.com/api/character/`;
-    if (request.trim() === '') {
-      try {
-        const response = await fetch(apiUrl);
-        if (response.ok) {
-          const data = await response.json();
-          this.setState({ results: data.results });
-        } else {
-          this.setState({ results: null });
-          console.error('API request failed');
-        }
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-      this.setState({ loading: false });
-      return;
+    if (request.trim() !== '') {
+      setSearchParams({ search: request });
     }
 
     try {
-      localStorage.setItem('request', request.trim());
-      const response = await fetch(`${apiUrl}?name=${request.trim()}`);
-      if (response.ok) {
-        const data = await response.json();
-        this.setState({ results: data.results });
-      } else {
-        this.setState({ results: null });
-        console.error('API request failed');
-      }
+      const data = await fetchData(request);
+      setResults(data);
+      setQuantityResults(data.length);
     } catch (error) {
       console.error('An error occurred:', error);
     }
-    this.setState({ loading: false });
+
+    setLoading(false);
+    console.log(results);
   };
 
-  render() {
-    if (this.state.error) throw this.state.error;
-    return (
-      <div className={styles.main}>
-        <div className={styles.search}>
-          <Search
-            request={this.state.request}
-            handleSearch={this.handleSearch}
-          />
-        </div>
-        <div className={styles.results}>
-          {this.state.loading ? (
-            <div className={styles.loader}>
-              <img src={loader} />
-            </div>
-          ) : this.state.results ? (
-            this.state.results.map((person) => {
-              return (
-                <CharacterItem
-                  key={person.id}
-                  name={person.name}
-                  status={person.status}
-                  type={person.type}
-                  location={person.location.name}
-                  image={person.image}
-                  species={person.species}
+  const changeQtyPerPage = (qty: number) => {
+    if (qty < quantityResults) {
+      setQtyPerPage(qty);
+      handleSearch(request);
+    }
+  };
+
+  const changeCharackter = (id: number) => {
+    setSearchParams((searchParams) => {
+      searchParams.set('details', String(id));
+      return searchParams;
+    });
+  };
+
+  useEffect(() => {
+    handleSearch(request);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [request]);
+
+  useEffect(() => {
+    const detailsParam = searchParams.get('details');
+    if (detailsParam) {
+      const characterId = Number(detailsParam);
+      const foundCharacter = results?.find((char) => char.id === characterId);
+      setCharacter(foundCharacter || null);
+    } else {
+      setCharacter(null);
+    }
+  }, [searchParams, results]);
+
+  if (error) throw error;
+
+  return (
+    <div className={styles.main}>
+      <Search request={request} handleSearch={handleSearch} />
+      <Pagination
+        currentPage={currentPage}
+        quantityOfCharacters={quantityResults}
+        qtyPerPage={qtyPerPage}
+        changeQtyPerPage={changeQtyPerPage}
+      />
+      <div className={styles.results}>
+        {loading ? (
+          <Loader />
+        ) : results && results.length > 0 ? (
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Layout
+                  characters={results}
+                  qtyPerPage={qtyPerPage}
+                  changeCharacter={changeCharackter}
                 />
-              );
-            })
-          ) : (
-            <div className={styles.notFound}>
-              <p>Sorry, Not Found Results On Your Request</p>
-            </div>
-          )}
-          <div
-            className={styles.error}
-            onClick={() => this.setState({ error: new Error() })}
-          >
-            <p>Throw Error</p>
-          </div>
+              }
+            >
+              <Route
+                index
+                element={character ? <Details character={character} /> : null}
+              />
+            </Route>
+          </Routes>
+        ) : null}
+        {results && results.length === 0 && <NotFound />}
+        <div className={styles.error} onClick={() => setError(new Error())}>
+          <p>Throw Error</p>
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default App;
