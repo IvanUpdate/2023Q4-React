@@ -22,8 +22,7 @@ const App: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [character, setCharacter] = useState<Character | null>(null);
   const [isColumn, setIsColumn] = useState<boolean>(false);
-
-  const currentPage = Number(searchParams.get('page')) || 1;
+  const [currentPage, setCurrentPage] = useState(1);
 
   const handleSearch = async (request: string) => {
     setIsColumn(false);
@@ -32,13 +31,16 @@ const App: React.FC = () => {
     localStorage.setItem('request', request);
 
     if (request.trim() !== '') {
-      setSearchParams({ search: request });
+      setSearchParams({ search: request, page: '1' });
+    } else {
+      setSearchParams({ page: '1' });
     }
 
     try {
       const data = await fetchData(request);
       setResults(data);
       setQuantityResults(data.length);
+      changePage(1);
     } catch (error) {
       console.error('An error occurred:', error);
     }
@@ -52,7 +54,21 @@ const App: React.FC = () => {
       setIsColumn(false);
       setQtyPerPage(qty);
       handleSearch(request);
+      setCurrentPage(1);
+      setSearchParams((searchParams) => {
+        searchParams.set('page', String(1));
+        return searchParams;
+      });
     }
+  };
+
+  const changePage = (page: number) => {
+    setCurrentPage(page);
+    setSearchParams((searchParams) => {
+      searchParams.set('page', String(page));
+      searchParams.delete('details');
+      return searchParams;
+    });
   };
 
   const exitDetails = () => {
@@ -80,8 +96,13 @@ const App: React.FC = () => {
   }, [request]);
 
   useEffect(() => {
+    const pageParam = Number(searchParams.get('page')) || 1;
+    setCurrentPage(pageParam);
+  }, [searchParams]);
+
+  useEffect(() => {
     const detailsParam = searchParams.get('details');
-    if (detailsParam) {
+    if (detailsParam && results) {
       setIsColumn(true);
       const characterId = Number(detailsParam);
       const foundCharacter = results?.find((char) => char.id === characterId);
@@ -101,6 +122,8 @@ const App: React.FC = () => {
         quantityOfCharacters={quantityResults}
         qtyPerPage={qtyPerPage}
         changeQtyPerPage={changeQtyPerPage}
+        changePage={changePage}
+        setCurrentPage={setCurrentPage}
       />
       <div className={styles.results}>
         {loading ? (

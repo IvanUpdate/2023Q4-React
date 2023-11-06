@@ -38,14 +38,14 @@ const Details: React.FC<DetailsProps> = ({ character, exitDetails }) => {
       <p
         className={styles.info}
       >{`Character's origin location: ${origin.name}`}</p>
-      <p className={styles.info}>
+      <div className={styles.info}>
         List of episodes in which this character appeared:
         <ul>
           {episode.map((ep) => (
             <li key={ep}>{ep.slice(40)} episode</li>
           ))}
         </ul>
-      </p>
+      </div>
       <p className={styles.info}>{`Species: ${species}`}</p>
     </div>
   );

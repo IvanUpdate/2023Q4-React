@@ -1,14 +1,16 @@
 .active_main {
-    margin: 0 auto;
-    display: flex;
-    gap: 20%;
-    padding-top: 0;
+  margin: 0 auto;
+  display: flex;
+  gap: 20%;
+  padding-top: 0;
 }
 
-.non_active_main {}
+.non_active_main {
+}
 
-.active_results {}
+.active_results {
+}
 
 .non_active_results {
-    opacity: 40%;
+  opacity: 40%;
 }
