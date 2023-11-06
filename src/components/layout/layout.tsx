@@ -1,4 +1,3 @@
-import React from 'react';
 import { Outlet, useSearchParams } from 'react-router-dom';
 import { Character } from '../../types/character';
 import CharacterItem from '../app/results/characterItem';
@@ -8,12 +7,16 @@ type LayoutProps = {
   characters: Array<Character>;
   qtyPerPage: number;
   changeCharacter: (id: number) => void;
+  isColumn: boolean;
+  exitDetails: () => void;
 };
 
 const Layout: React.FC<LayoutProps> = ({
   characters,
   qtyPerPage,
   changeCharacter,
+  isColumn,
+  exitDetails,
 }) => {
   const [searchParams] = useSearchParams();
 
@@ -21,9 +24,17 @@ const Layout: React.FC<LayoutProps> = ({
   const startIndex = (page - 1) * qtyPerPage;
   const lastIndex = page * qtyPerPage;
 
+  const handleClick = () => {
+    console.log('Clicked on the element');
+    exitDetails();
+  };
+
   return (
-    <div className={styles.main}>
-      <div className={styles.results}>
+    <div className={isColumn ? styles.active_main : styles.non_active_main}>
+      <div
+        className={isColumn ? styles.non_active_results : styles.active_results}
+        onClick={handleClick}
+      >
         {characters.slice(startIndex, lastIndex).map((person) => (
           <CharacterItem
             key={person.id}
@@ -38,7 +49,7 @@ const Layout: React.FC<LayoutProps> = ({
           />
         ))}
       </div>
-      <div className={styles.outlet}>
+      <div>
         <Outlet />
       </div>
     </div>

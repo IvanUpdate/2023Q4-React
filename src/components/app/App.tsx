@@ -21,10 +21,12 @@ const App: React.FC = () => {
   const [qtyPerPage, setQtyPerPage] = useState<number>(20);
   const [searchParams, setSearchParams] = useSearchParams();
   const [character, setCharacter] = useState<Character | null>(null);
+  const [isColumn, setIsColumn] = useState<boolean>(false);
 
   const currentPage = Number(searchParams.get('page')) || 1;
 
   const handleSearch = async (request: string) => {
+    setIsColumn(false);
     setRequest(request);
     setLoading(true);
     localStorage.setItem('request', request);
@@ -47,12 +49,25 @@ const App: React.FC = () => {
 
   const changeQtyPerPage = (qty: number) => {
     if (qty < quantityResults) {
+      setIsColumn(false);
       setQtyPerPage(qty);
       handleSearch(request);
     }
   };
 
+  const exitDetails = () => {
+    if (isColumn) {
+      setIsColumn(false);
+      setCharacter(null);
+      setSearchParams((searchParams) => {
+        searchParams.delete('details');
+        return searchParams;
+      });
+    }
+  };
+
   const changeCharackter = (id: number) => {
+    setIsColumn(true);
     setSearchParams((searchParams) => {
       searchParams.set('details', String(id));
       return searchParams;
@@ -67,6 +82,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const detailsParam = searchParams.get('details');
     if (detailsParam) {
+      setIsColumn(true);
       const characterId = Number(detailsParam);
       const foundCharacter = results?.find((char) => char.id === characterId);
       setCharacter(foundCharacter || null);
@@ -98,12 +114,18 @@ const App: React.FC = () => {
                   characters={results}
                   qtyPerPage={qtyPerPage}
                   changeCharacter={changeCharackter}
+                  isColumn={isColumn}
+                  exitDetails={exitDetails}
                 />
               }
             >
               <Route
                 index
-                element={character ? <Details character={character} /> : null}
+                element={
+                  character ? (
+                    <Details character={character} exitDetails={exitDetails} />
+                  ) : null
+                }
               />
             </Route>
           </Routes>
