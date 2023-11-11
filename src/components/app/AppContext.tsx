@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 
 import { Character } from '../../types/character';
+import { useSearchParams } from 'react-router-dom';
 
 interface AppContextProps {
   children: ReactNode;
@@ -58,7 +59,7 @@ export const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
   const [qtyPerPage, setQtyPerPage] = useState<number>(20);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
-  const [searchParams, setSearchParams] = useState(new URLSearchParams());
+  const [searchParams, setSearchParams] = useSearchParams();
   const [character, setCharacter] = useState<Character | null>(null);
   const [isColumn, setIsColumn] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);

@@ -147,7 +147,7 @@ const AppContent: React.FC = () => {
     } else {
       setCharacter(null);
     }
-  }, [searchParams, results]);
+  }, [changeCharacter]);
 
   if (error) throw error;
 
@@ -155,13 +155,8 @@ const AppContent: React.FC = () => {
     <div className={styles.main}>
       <Search handleSearch={handleSearch} />
       <Pagination
-        currentPage={currentPage}
-        quantityOfCharacters={quantityResults}
-        qtyPerPage={qtyPerPage}
         changeQtyPerPage={changeQtyPerPage}
         changePage={changePage}
-        setCurrentPage={setCurrentPage}
-        pageSizeOptions={[20,10,5]}
       />
       <div className={styles.results}>
         {loading ? (
@@ -181,7 +176,7 @@ const AppContent: React.FC = () => {
                 index
                 element={
                   character ? (
-                    <Details character={character} exitDetails={exitDetails} />
+                    <Details exitDetails={exitDetails} />
                   ) : null
                 }
               />
