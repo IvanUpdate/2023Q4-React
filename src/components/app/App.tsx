@@ -1,28 +1,41 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { Route, Routes } from 'react-router-dom';
+
 import styles from './App.module.css';
-import Search from './search/search';
-import { Character } from '../../types/character';
 import { fetchData } from '../../services/data/dataService';
+
+import Search from './search/search';
 import Pagination from '../pagination/pagination';
 import Loader from '../loader/loader';
 import NotFound from './pages/notFound';
-import { Route, Routes, useSearchParams } from 'react-router-dom';
 import Layout from '../layout/layout';
 import Details from './details/details';
+import { useAppContext, AppContextProvider } from './AppContext';
 
-const App: React.FC = () => {
-  const [request, setRequest] = useState<string>(
-    localStorage.getItem('request') || ''
-  );
-  const [results, setResults] = useState<Array<Character> | null>(null);
-  const [quantityResults, setQuantityResults] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [qtyPerPage, setQtyPerPage] = useState<number>(20);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [character, setCharacter] = useState<Character | null>(null);
-  const [isColumn, setIsColumn] = useState<boolean>(false);
-  const [currentPage, setCurrentPage] = useState(1);
+const AppContent: React.FC = () => {
+
+  const {
+    request,
+    setRequest,
+    results,
+    setResults,
+    quantityResults,
+    setQuantityResults,
+    qtyPerPage,
+    setQtyPerPage,
+    loading,
+    setLoading,
+    error,
+    setError,
+    searchParams,
+    setSearchParams,
+    character,
+    setCharacter,
+    isColumn,
+    setIsColumn,
+    currentPage,
+    setCurrentPage,
+  } = useAppContext();
 
   const handleSearch = async (request: string) => {
     setIsColumn(false);
@@ -30,17 +43,14 @@ const App: React.FC = () => {
     setLoading(true);
     localStorage.setItem('request', request);
 
-    if (request.trim() !== '') {
-      setSearchParams({ search: request, page: '1' });
-    } else {
-      setSearchParams({ page: '1' });
-    }
+    updateSearchParameters(request, 1);
 
     try {
       const data = await fetchData(request);
       setResults(data);
       setQuantityResults(data.length);
       changePage(1);
+      setCurrentPage(1);
     } catch (error) {
       console.error('An error occurred:', error);
     }
@@ -49,9 +59,16 @@ const App: React.FC = () => {
     console.log(results);
   };
 
+  const updateSearchParameters = (search: string, page: number) => {
+    setSearchParams((searchParams) => {
+      searchParams.set('search', search);
+      searchParams.set('page', String(page));
+      return searchParams;
+    });
+  }
+
   const changeQtyPerPage = (qty: number) => {
     if (qty < quantityResults) {
-      setIsColumn(false);
       setQtyPerPage(qty);
       handleSearch(request);
       setCurrentPage(1);
@@ -66,7 +83,6 @@ const App: React.FC = () => {
     setCurrentPage(page);
     setSearchParams((searchParams) => {
       searchParams.set('page', String(page));
-      searchParams.delete('details');
       return searchParams;
     });
   };
@@ -82,13 +98,34 @@ const App: React.FC = () => {
     }
   };
 
-  const changeCharackter = (id: number) => {
+  const changeCharacter = (id: number) => {
+    console.log(id);
     setIsColumn(true);
     setSearchParams((searchParams) => {
       searchParams.set('details', String(id));
       return searchParams;
     });
   };
+
+  useEffect(() => {
+    localStorage.setItem('request', request);
+  }, [request]);
+
+  useEffect(() => {
+    const savedRequest = localStorage.getItem('request');
+    if (savedRequest) {
+      setRequest(savedRequest);
+    }
+  }, [setRequest]);
+
+  useEffect(() => {
+    localStorage.setItem('currentPage', String(currentPage));
+  }, [currentPage]);
+
+  useEffect(() => {
+    const savedPage = parseInt(localStorage.getItem('currentPage') || '1', 10);
+    setCurrentPage(savedPage);
+  }, []);
 
   useEffect(() => {
     handleSearch(request);
@@ -116,7 +153,7 @@ const App: React.FC = () => {
 
   return (
     <div className={styles.main}>
-      <Search request={request} handleSearch={handleSearch} />
+      <Search handleSearch={handleSearch} />
       <Pagination
         currentPage={currentPage}
         quantityOfCharacters={quantityResults}
@@ -124,6 +161,7 @@ const App: React.FC = () => {
         changeQtyPerPage={changeQtyPerPage}
         changePage={changePage}
         setCurrentPage={setCurrentPage}
+        pageSizeOptions={[20,10,5]}
       />
       <div className={styles.results}>
         {loading ? (
@@ -134,10 +172,7 @@ const App: React.FC = () => {
               path="/"
               element={
                 <Layout
-                  characters={results}
-                  qtyPerPage={qtyPerPage}
-                  changeCharacter={changeCharackter}
-                  isColumn={isColumn}
+                  changeCharacter={changeCharacter}
                   exitDetails={exitDetails}
                 />
               }
@@ -159,6 +194,16 @@ const App: React.FC = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+
+
+const App: React.FC = () => {
+  return (
+    <AppContextProvider>
+      <AppContent />
+    </AppContextProvider>
   );
 };
 

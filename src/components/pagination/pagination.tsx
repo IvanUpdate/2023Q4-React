@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import styles from './pagination.module.css';
 import { Link, useSearchParams } from 'react-router-dom';
 
@@ -6,9 +6,10 @@ interface PaginationProps {
   currentPage: number;
   quantityOfCharacters: number;
   qtyPerPage: number;
+  changePage: (page: number) => void; 
   changeQtyPerPage: (qty: number) => void;
-  changePage: (page: number) => void;
   setCurrentPage: (page: number) => void;
+  pageSizeOptions: number[];
 }
 
 const Pagination: React.FC<PaginationProps> = ({
@@ -16,79 +17,70 @@ const Pagination: React.FC<PaginationProps> = ({
   quantityOfCharacters,
   qtyPerPage,
   changeQtyPerPage,
-  setCurrentPage,
+  pageSizeOptions,
+  changePage,
 }) => {
   const [page, setPage] = useState<number>(currentPage);
-  const [selectedValue, setSelectedValue] = useState(qtyPerPage || 20);
+  const [selectedValue, setSelectedValue] = useState(qtyPerPage || pageSizeOptions[0]);
   const [searchParams] = useSearchParams();
   const lastPage = Math.ceil(quantityOfCharacters / qtyPerPage);
-  const pages = [];
-  for (let i = 1; i <= lastPage; i++) {
-    pages.push(i);
-  }
+  const pages = Array.from({ length: lastPage }, (_, index) => index + 1);
   const search = searchParams.get('search') || null;
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    if (value !== String(selectedValue)) {
-      const val = Number(e.target.value);
-      setSelectedValue(val);
-      changeQtyPerPage(val);
+    const value = Number(e.target.value);
+    if (value !== selectedValue) {
+      setSelectedValue(value);
+      changeQtyPerPage(value);
     }
   };
 
   const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
     setPage(newPage);
+    changePage(newPage)
   };
 
   if (quantityOfCharacters <= qtyPerPage) {
-    return false;
+    return null;
   }
 
   return (
     <div className={styles.pagination}>
       <div className={styles.select}>
-        <label>Page size: </label>
-        <select value={selectedValue} onChange={handleChange}>
-          <option value={20}>20</option>
-          <option value={10}>10</option>
-          <option value={5}>5</option>
+        <label htmlFor="pageSizeSelect">Page size: </label>
+        <select id="pageSizeSelect" value={selectedValue} onChange={handleChange}>
+          {pageSizeOptions.map((size) => (
+            <option key={size} value={size}>
+              {size}
+            </option>
+          ))}
         </select>
       </div>
       <div className={styles.pages}>
         <span>Pages: </span>
-        {currentPage !== 1 && (
+        {page !== 1 && (
           <Link
-            to={
-              search
-                ? `?search=${search}&page=${page - 1}`
-                : `?page=${page - 1}`
-            }
-            className={styles.pages}
+            to={search ? `?search=${search}&page=${page - 1}` : `?page=${page - 1}`}
+            className={styles.paginationLink}
             onClick={() => handlePageChange(page - 1)}
           >
             <span>Prev</span>
           </Link>
         )}
-        {pages.map((page) => (
+        {pages.map((pageNumber) => (
           <Link
-            to={search ? `?search=${search}&page=${page}` : `?page=${page}`}
-            key={page}
-            className={currentPage === page ? styles.active : styles.pages}
-            onClick={() => handlePageChange(page)}
+            to={search ? `?search=${search}&page=${pageNumber}` : `?page=${pageNumber}`}
+            key={pageNumber}
+            className={page === pageNumber ? styles.active : styles.paginationLink}
+            onClick={() => handlePageChange(pageNumber)}
           >
-            {page}
+            {pageNumber}
           </Link>
         ))}
-        {lastPage !== currentPage && (
+        {lastPage !== page && (
           <Link
-            to={
-              search
-                ? `?search=${search}&page=${page + 1}`
-                : `?page=${page + 1}`
-            }
-            className={styles.pages}
+            to={search ? `?search=${search}&page=${page + 1}` : `?page=${page + 1}`}
+            className={styles.paginationLink}
             onClick={() => handlePageChange(page + 1)}
           >
             <span>Next</span>
@@ -100,3 +92,4 @@ const Pagination: React.FC<PaginationProps> = ({
 };
 
 export default Pagination;
+

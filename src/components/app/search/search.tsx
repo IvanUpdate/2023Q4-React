@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './search.module.css';
+import { useAppContext } from '../AppContext';
 
 type SearchProps = {
-  request: string;
   handleSearch: (request: string) => void;
 };
 
 const Search: React.FC<SearchProps> = (props) => {
-  const [input, setInput] = useState<string>(props.request);
+  const {
+    input,
+    setInput
+  } = useAppContext();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);

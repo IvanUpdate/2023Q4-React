@@ -1,24 +1,23 @@
-import { Outlet, useSearchParams } from 'react-router-dom';
-import { Character } from '../../types/character';
+import { Outlet } from 'react-router-dom';
 import CharacterItem from '../app/results/characterItem';
 import styles from './layout.module.css';
+import { useAppContext } from '../app/AppContext';
 
 type LayoutProps = {
-  characters: Array<Character>;
-  qtyPerPage: number;
   changeCharacter: (id: number) => void;
-  isColumn: boolean;
   exitDetails: () => void;
 };
 
 const Layout: React.FC<LayoutProps> = ({
-  characters,
-  qtyPerPage,
   changeCharacter,
-  isColumn,
   exitDetails,
 }) => {
-  const [searchParams] = useSearchParams();
+  const {
+    qtyPerPage,
+    searchParams,
+    isColumn,
+    results,
+  } = useAppContext();
 
   const page = Number(searchParams.get('page')) || 1;
   const startIndex = (page - 1) * qtyPerPage;
@@ -35,7 +34,7 @@ const Layout: React.FC<LayoutProps> = ({
         className={isColumn ? styles.non_active_results : styles.active_results}
         onClick={handleClick}
       >
-        {characters.slice(startIndex, lastIndex).map((person) => (
+        {results && results.slice(startIndex, lastIndex).map((person) => (
           <CharacterItem
             key={person.id}
             id={person.id}

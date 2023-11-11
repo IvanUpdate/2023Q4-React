@@ -1,12 +1,21 @@
-import { Character } from '../../../types/character';
+import { useAppContext } from '../AppContext';
 import styles from './details.module.css';
 
 interface DetailsProps {
-  character: Character;
   exitDetails: () => void;
 }
 
-const Details: React.FC<DetailsProps> = ({ character, exitDetails }) => {
+const Details: React.FC<DetailsProps> = ({ exitDetails }) => {
+  
+
+  const {
+    character
+  } = useAppContext();
+
+  if (!character) {
+    return false;
+  }
+
   const {
     name,
     status,
