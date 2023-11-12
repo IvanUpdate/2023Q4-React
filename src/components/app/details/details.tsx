@@ -34,7 +34,7 @@ const Details: React.FC<DetailsProps> = ({ exitDetails }) => {
 
   return (
     <div className={styles.card}>
-      <div id="icon" className={styles.Icon} onClick={handleClick}>
+      <div data-testid="icon" className={styles.Icon} onClick={handleClick}>
         <span></span>
         <span></span>
         <span></span>

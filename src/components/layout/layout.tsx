@@ -24,15 +24,15 @@ const Layout: React.FC<LayoutProps> = ({
   const lastIndex = page * qtyPerPage;
 
   const handleClick = () => {
-    console.log('Clicked on the element');
     exitDetails();
   };
 
   return (
-    <div className={isColumn ? styles.active_main : styles.non_active_main}>
+    <div className={isColumn ? styles.active_main : styles.non_active_main} >
       <div
         className={isColumn ? styles.non_active_results : styles.active_results}
         onClick={handleClick}
+        data-testid="results-container"
       >
         {results && results.slice(startIndex, lastIndex).map((person) => (
           <CharacterItem

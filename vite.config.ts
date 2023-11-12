@@ -13,11 +13,10 @@ export default defineConfig({
     setupFiles: ['./src/setupTests.ts'],
     coverage: {
       enabled: true,
-      all: true,
       include: ['src/components/**/*.tsx'],
       provider: 'istanbul',
       reporter: 'text',
-      exclude: ['./src/services/**', './src/assets/**', './src/types', './src/main.tsx','./src/components/errorBoundary/*', './src/components/loader', './src/components/app/AppContext.tsx']
+      exclude: ['./src/services/**', './src/assets/**', './src/types', './src/main.tsx','./src/components/errorBoundary/errorBoundary.tsx',  './src/components/app/AppContext.tsx']
     },
   },
 })

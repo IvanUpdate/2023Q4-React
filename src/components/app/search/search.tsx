@@ -7,10 +7,7 @@ type SearchProps = {
 };
 
 const Search: React.FC<SearchProps> = (props) => {
-  const {
-    input,
-    setInput
-  } = useAppContext();
+  const { input, setInput } = useAppContext();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -20,6 +17,7 @@ const Search: React.FC<SearchProps> = (props) => {
     <div className={styles.search}>
       <div className={styles.wrapperInput}>
         <input
+          data-testid="search-input"
           value={input}
           onChange={handleInputChange}
           type="text"
@@ -29,6 +27,7 @@ const Search: React.FC<SearchProps> = (props) => {
       </div>
       <div className={styles.wrapperButton}>
         <button
+          data-testid="search-button"
           className={styles.searchButton}
           onClick={() => props.handleSearch(input)}
         >

@@ -22,13 +22,13 @@ const CharacterItem: React.FC<CharacterProps> = ({
   species,
   changeCharacter,
 }) => {
-  const handleDivClick = (id: number) => {
+  const handleDivClick = () => {
     changeCharacter(id);
   };
 
   return (
     <article>
-    <div className={styles.card} onClick={() => handleDivClick(id)}>
+    <div className={styles.card} onClick={() => handleDivClick()} data-testid='div-container'>
       <p className={styles.intro}>{`${name} from ${location}`}</p>
       <img className={styles.image} src={image} alt={name} />
       <p className={styles.info}>{`Status: ${status}`}</p>

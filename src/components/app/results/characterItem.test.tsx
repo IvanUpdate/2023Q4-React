@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CharacterItem from './characterItem';
 
@@ -44,6 +44,52 @@ describe('Character Component', () => {
     } else {
       throw new Error('Card element is null');
     }
+  });
+
+  it('calls changeCharacter when the card is clicked', () => {
+    const mockChangeCharacter = vi.fn();
+
+    const { getByText } = render(
+      <CharacterItem
+        id={1}
+        name="Rick Sanchez"
+        status="Alive"
+        type="Human"
+        location="Earth"
+        image="rick_image_url"
+        species="Human"
+        changeCharacter={mockChangeCharacter}
+      />
+    );
+
+    fireEvent.click(getByText('Rick Sanchez from Earth'));
+
+    expect(mockChangeCharacter).toHaveBeenCalledWith(1);
+  });
+
+  
+});
+
+describe('handleDivClick testing by click', () => {
+  it('calls changeCharacter when clicked', () => {
+    const mockChangeCharacter = vi.fn();
+    const { getByTestId} = render(
+      <CharacterItem
+        id={1}
+        name="Rick Sanchez"
+        status="Alive"
+        type="Human"
+        location="Earth"
+        image="rick_image_url"
+        species="Human"
+        changeCharacter={mockChangeCharacter}
+      />
+    );
+    const resultsContainer = getByTestId('div-container');
+
+    fireEvent.click(resultsContainer);
+
+    expect(mockChangeCharacter).toHaveBeenCalled();
   });
 });
 

@@ -48,7 +48,7 @@ const Pagination: React.FC<PaginationProps> = ({
   return (
     <div className={styles.pagination}>
       <div className={styles.select}>
-        <label htmlFor="pageSizeSelect">Page size: </label>
+        <label htmlFor="pageSizeSelect" data-testid="page-size">Page size: </label>
         <select id="pageSizeSelect" value={selectedValue} onChange={handleChange}>
           {pageSizeOptions.map((size) => (
             <option key={size} value={size}>
@@ -64,6 +64,7 @@ const Pagination: React.FC<PaginationProps> = ({
             to={search ? `?search=${search}&page=${currentPage - 1}` : `?page=${currentPage - 1}`}
             className={styles.paginationLink}
             onClick={() => handlePageChange(currentPage - 1)}
+            data-testid="pagination-link" 
           >
             <span>Prev</span>
           </Link>
@@ -74,6 +75,7 @@ const Pagination: React.FC<PaginationProps> = ({
             key={pageNumber}
             className={currentPage === pageNumber ? styles.active : styles.paginationLink}
             onClick={() => handlePageChange(pageNumber)}
+            data-testid="pagination-link" 
           >
             {pageNumber}
           </Link>
@@ -83,6 +85,7 @@ const Pagination: React.FC<PaginationProps> = ({
             to={search ? `?search=${search}&page=${currentPage + 1}` : `?page=${currentPage + 1}`}
             className={styles.paginationLink}
             onClick={() => handlePageChange(currentPage + 1)}
+            data-testid='next' 
           >
             <span>Next</span>
           </Link>

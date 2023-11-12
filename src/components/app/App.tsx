@@ -181,7 +181,7 @@ const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AppContextProvider><AppContent /></AppContextProvider>} />
+        <Route path="/" element={<AppContextProvider data-testid="app-context-provider"><AppContent data-testid="app-context"/></AppContextProvider>} />
       </Routes>
     </BrowserRouter>
   );
