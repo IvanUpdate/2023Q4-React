@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from './pagination.module.css';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAppContext } from '../app/AppContext';
 
 interface PaginationProps {

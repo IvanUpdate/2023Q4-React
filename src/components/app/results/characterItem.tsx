@@ -27,6 +27,7 @@ const CharacterItem: React.FC<CharacterProps> = ({
   };
 
   return (
+    <article>
     <div className={styles.card} onClick={() => handleDivClick(id)}>
       <p className={styles.intro}>{`${name} from ${location}`}</p>
       <img className={styles.image} src={image} alt={name} />
@@ -34,6 +35,7 @@ const CharacterItem: React.FC<CharacterProps> = ({
       <p className={styles.info}>{`Type: ${type}`}</p>
       <p className={styles.info}>{`Species: ${species}`}</p>
     </div>
+    </article>
   );
 };
 

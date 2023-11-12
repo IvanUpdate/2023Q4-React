@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, BrowserRouter } from 'react-router-dom';
 
 import styles from './App.module.css';
 import { fetchData } from '../../services/data/dataService';
@@ -13,7 +13,6 @@ import Details from './details/details';
 import { useAppContext, AppContextProvider } from './AppContext';
 
 const AppContent: React.FC = () => {
-
   const {
     request,
     setRequest,
@@ -21,7 +20,6 @@ const AppContent: React.FC = () => {
     setResults,
     quantityResults,
     setQuantityResults,
-    qtyPerPage,
     setQtyPerPage,
     loading,
     setLoading,
@@ -56,7 +54,6 @@ const AppContent: React.FC = () => {
     }
 
     setLoading(false);
-    console.log(results);
   };
 
   const updateSearchParameters = (search: string, page: number) => {
@@ -65,7 +62,7 @@ const AppContent: React.FC = () => {
       searchParams.set('page', String(page));
       return searchParams;
     });
-  }
+  };
 
   const changeQtyPerPage = (qty: number) => {
     if (qty < quantityResults) {
@@ -99,12 +96,12 @@ const AppContent: React.FC = () => {
   };
 
   const changeCharacter = (id: number) => {
-    console.log(id);
     setIsColumn(true);
     setSearchParams((searchParams) => {
       searchParams.set('details', String(id));
       return searchParams;
     });
+    console.log(`${id} был вызван ${isColumn} ${character}`);
   };
 
   useEffect(() => {
@@ -154,52 +151,43 @@ const AppContent: React.FC = () => {
   return (
     <div className={styles.main}>
       <Search handleSearch={handleSearch} />
-      <Pagination
-        changeQtyPerPage={changeQtyPerPage}
-        changePage={changePage}
-      />
+      <Pagination changeQtyPerPage={changeQtyPerPage} changePage={changePage} />
       <div className={styles.results}>
         {loading ? (
           <Loader />
         ) : results && results.length > 0 ? (
           <Routes>
-            <Route
-              path="/"
-              element={
-                <Layout
+            <Route path="/" element={<Layout
                   changeCharacter={changeCharacter}
                   exitDetails={exitDetails}
-                />
-              }
-            >
-              <Route
-                index
-                element={
-                  character ? (
-                    <Details exitDetails={exitDetails} />
-                  ) : null
-                }
-              />
+                />}>
+              <Route index element={character ? <Details exitDetails={exitDetails} /> : null}/>
             </Route>
           </Routes>
-        ) : null}
-        {results && results.length === 0 && <NotFound />}
-        <div className={styles.error} onClick={() => setError(new Error())}>
-          <p>Throw Error</p>
-        </div>
+        ) : (
+          <>
+            <div className={styles.error} onClick={() => setError(new Error())}>
+              <p>Throw Error</p>
+            </div>
+            {results && results.length === 0 && <NotFound />}
+          </>
+        )}
       </div>
     </div>
   );
 };
 
-
-
 const App: React.FC = () => {
   return (
-    <AppContextProvider>
-      <AppContent />
-    </AppContextProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<AppContextProvider><AppContent /></AppContextProvider>} />
+      </Routes>
+    </BrowserRouter>
   );
 };
 
+
 export default App;
+
+
