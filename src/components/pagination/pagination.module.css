@@ -1,0 +1,47 @@
+.pagination {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1rem;
+  text-decoration: none;
+  color: rgba(37, 61, 29, 0.7);
+}
+
+.select select {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1rem;
+  text-decoration: none;
+  border-radius: 50px 50px 30px 30px;
+  color: rgba(37, 61, 29, 0.7);
+  background-color: #f0e14a;
+}
+
+.pages {
+  color: #333;
+  text-decoration: none;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.active {
+  color: #f0e14a;
+}
+
+@media only screen and (max-width: 800px) {
+  .pages {
+    flex-wrap: wrap;
+  }
+}
+
+label {
+  font-size: 20px;
+}
+span {
+  font-size: 20px;
+}
