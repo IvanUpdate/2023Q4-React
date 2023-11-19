@@ -1,6 +1,9 @@
-import { hideDetails } from '../../../redux/pageSlice';
+import { hideDetails, setStatusDetails } from '../../../redux/pageSlice';
 import { useGetCharacterByIdQuery } from '../../../redux/services/rickApi';
 import styles from './details.module.css';
+import { useAppDispatch } from '../hook';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 type DetailsProps = {
   id: string;
@@ -8,7 +11,21 @@ type DetailsProps = {
 
 const Details: React.FC<DetailsProps> = ({id}) => {
 
-  const {data} = useGetCharacterByIdQuery(id);
+  const {data, isLoading} = useGetCharacterByIdQuery(id);
+
+  const dispatch = useAppDispatch();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoading) {
+      dispatch(setStatusDetails('pending'));
+    } else if (!data) {
+      dispatch(setStatusDetails('rejected'));
+    } else if (data) {
+      dispatch(setStatusDetails('fulfilled'));
+    }
+  }, [isLoading, data, dispatch]);
 
   if (!data) {
     return false;
@@ -27,7 +44,8 @@ const Details: React.FC<DetailsProps> = ({id}) => {
   } = data;
 
   const handleExitIcon = () => {
-    hideDetails();
+    dispatch(hideDetails());
+    navigate(-1);
   };
 
   return (

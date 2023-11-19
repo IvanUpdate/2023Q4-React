@@ -8,7 +8,7 @@ import { useGetCharactersBySearchQuery } from '../../redux/services/rickApi';
 const Pagination: React.FC = () => {
 
   const {pageNumber, pageSize, search} = useAppSelector(state => state.page);
-  const {data} = useGetCharactersBySearchQuery(search); 
+  const {data, isSuccess} = useGetCharactersBySearchQuery({search, pageNumber}); 
   const dispatch = useAppDispatch();
 
   const pageSizeOptions =[20,10,5];
@@ -28,8 +28,8 @@ const Pagination: React.FC = () => {
     dispatch(setCurrentPage(newPage));
   };
 
-  if (numberOfPages <= 1) {
-    return null;
+  if (numberOfPages <= 1 || !isSuccess) {
+    return false;
   }
 
   return (
@@ -58,10 +58,10 @@ const Pagination: React.FC = () => {
         )}
         {pages.map((page) => (
           <Link
-            to={search ? `?search=${search}&page=${pageNumber}` : `?page=${pageNumber}`}
-            key={pageNumber}
+            to={search ? `?search=${search}&page=${page}` : `?page=${page}`}
+            key={page}
             className={page === pageNumber ? styles.active : styles.paginationLink}
-            onClick={() => handlePageChange(pageNumber)}
+            onClick={() => handlePageChange(page)}
             data-testid="pagination-link" 
           >
             {page}

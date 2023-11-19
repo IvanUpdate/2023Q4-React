@@ -2,21 +2,43 @@ import { useGetCharactersBySearchQuery } from '../../redux/services/rickApi';
 import CharacterItem from '../app/results/characterItem';
 import styles from './layout.module.css';
 import { useAppDispatch, useAppSelector } from '../app/hook';
-import { hideDetails } from '../../redux/pageSlice';
+import { hideDetails, setPageCharacters, setStatusMain } from '../../redux/pageSlice';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Layout: React.FC = () => {
 
-  const {data} = useGetCharactersBySearchQuery(useAppSelector(state => state.page.search));
-  const {pageNumber, pageSize ,isDetailed } = useAppSelector(state => state.page);
+  const {search, pageNumber, pageSize ,isDetailed } = useAppSelector(state => state.page);
+  const request = {
+    search: search ,
+    pageNumber: pageNumber
+  }
+  const {data, isLoading, isSuccess} = useGetCharactersBySearchQuery(request);
 
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
-  const startIndex = (pageNumber - 1) * pageSize;
-  const lastIndex = pageNumber * pageSize;
+  const navigate = useNavigate();
 
   const handleClick = () => {
-    dispatch(hideDetails());
+    isDetailed && dispatch(hideDetails());
+    isDetailed && navigate(-1);
   };
+
+  useEffect(() => {
+    if (isLoading) {
+      dispatch(setStatusMain('pending'));
+    } else if (!data) {
+      dispatch(setStatusMain('rejected'));
+    } else if (data) {
+      dispatch(setStatusMain('fulfilled'));
+    }
+  }, [isLoading, data, dispatch]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(setPageCharacters(data.results));
+    }
+  }, [isSuccess, data, dispatch]);
 
   return (
     <div className={isDetailed ? styles.active_main : styles.non_active_main} >
@@ -25,7 +47,7 @@ const Layout: React.FC = () => {
         onClick={handleClick}
         data-testid="results-container"
       >
-        {data && data.results.slice(startIndex, lastIndex).map((person) => (
+        {data && data.results.slice(0,pageSize).map((person) => (
           <CharacterItem
             key={person.id}
             id={person.id}
@@ -43,3 +65,4 @@ const Layout: React.FC = () => {
 };
 
 export default Layout;
+

@@ -28,5 +28,14 @@
     border-radius: 50px 50px 30px 30px;
     transition: 1s;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    margin: 0 auto;
+  }
+
+  .column {
+    display: flex;
+    align-items: top;
+    height: 100%;
+    width: 50%;
+    margin: 0 auto;
   }
   

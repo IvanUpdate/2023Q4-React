@@ -1,6 +1,8 @@
 import React from 'react';
 import { showDetails } from '../../../redux/pageSlice';
 import styles from './characterItem.module.css';
+import { useAppDispatch } from '../hook';
+import { Link } from 'react-router-dom';
 
 type CharacterProps = {
   id: number;
@@ -23,13 +25,16 @@ const CharacterItem: React.FC<CharacterProps> = ({
 }) => {
 
 
+  const dispatch = useAppDispatch();
+
 
   const handleClickItem = () => {
-    showDetails(String(id));
+    console.log(id);
+    dispatch(showDetails(String(id)));
   };
 
   return (
-    <article>
+    <Link to={`details/${id}`}>
     <div className={styles.card} onClick={() => handleClickItem()} data-testid='div-container'>
       <p className={styles.intro}>{`${name} from ${location}`}</p>
       <img className={styles.image} src={image} alt={name} />
@@ -37,7 +42,7 @@ const CharacterItem: React.FC<CharacterProps> = ({
       <p className={styles.info}>{`Type: ${type}`}</p>
       <p className={styles.info}>{`Species: ${species}`}</p>
     </div>
-    </article>
+    </Link>
   );
 };
 

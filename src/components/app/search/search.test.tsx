@@ -1,59 +1,74 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, fireEvent } from '@testing-library/react';
+import React from 'react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
 import Search from './search';
+import { setSearch } from '../../../redux/pageSlice';
 
-const localStorageMock = (() => {
-  let store: Record<string, string> = {};
-  return {
-    getItem: (key: string) => store[key] || null,
-    setItem: (key: string, value: string) => (store[key] = value.toString()),
-    clear: () => (store = {}),
-  };
-})();
-
-
-
-beforeEach(() => {
-  localStorageMock.clear();
-  vi.mock('../AppContext', () => ({
-    useAppContext: vi.fn(() => ({
-      input: 'test',
-      setInput: vi.fn(),
-    })),
-  }));
-});
-
-Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-
-const mockHandleSearch = (request: string) => {
-  localStorage.setItem('request', request);
-};
+const mockStore = configureStore();
 
 describe('Search Component', () => {
-  it('saves entered value to local storage when Search button is clicked', () => {
-    const { getByTestId, getByPlaceholderText } = render(
-      <Search handleSearch={mockHandleSearch} />
+  it('renders with initial search value', () => {
+    const initialState = {
+      page: {
+        search: 'initialValue',
+      },
+    };
+    const store = mockStore(initialState);
+
+    render(
+      <Provider store={store}>
+        <Search />
+      </Provider>
     );
 
-    const searchInput =  getByPlaceholderText('test');
-    fireEvent.change(searchInput, { target: { value: 'Test Search' } });
-
-    const searchButton = getByTestId('search-button');
-    fireEvent.click(searchButton);
-
-    console.log(window.localStorage)
-    expect(localStorageMock.getItem('request')).toBe('test');
+    const searchInput = screen.getByTestId('search-input') as HTMLInputElement;
+    expect(searchInput.value).toBe('initialValue');
   });
 
-  it('retrieves value from local storage upon mounting', () => {
-    localStorageMock.setItem('request', 'Saved Value');
+  it('dispatches setSearch action when search button is clicked', () => {
+    const initialState = {
+      page: {
+        search: 'initialValue',
+      },
+    };
+    const store = mockStore(initialState);
 
-    const { getByPlaceholderText } = render(
-      <Search handleSearch={mockHandleSearch} />
+    render(
+      <Provider store={store}>
+        <Search />
+      </Provider>
     );
 
-    const searchInput = getByPlaceholderText('test');
-    expect(searchInput).toHaveValue('test');
+    const searchInput = screen.getByTestId('search-input') as HTMLInputElement;
+    const searchButton = screen.getByTestId('search-button');
+
+    fireEvent.change(searchInput, { target: { value: 'newSearchValue' } });
+    fireEvent.click(searchButton);
+
+    const actions = store.getActions();
+    expect(actions).toEqual([setSearch('newSearchValue')]);
+  });
+
+  it('updates input value when input changes', () => {
+    const initialState = {
+      page: {
+        search: 'initialValue',
+      },
+    };
+    const store = mockStore(initialState);
+
+    render(
+      <Provider store={store}>
+        <Search />
+      </Provider>
+    );
+
+    const searchInput = screen.getByTestId('search-input') as HTMLInputElement;
+
+    fireEvent.change(searchInput, { target: { value: 'updatedValue' } });
+
+    expect(searchInput.value).toBe('updatedValue');
   });
 });

@@ -1,18 +1,23 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Character } from "../types/character";
 
+
+type LoadingStatus = 'idle' | 'pending' | 'fulfilled' | 'rejected';
 
 interface PageState {
     search: string;
-    loading: 'pending' | 'fulfilled' | 'rejected';
+    loadingMain: LoadingStatus;
+    loadingDetails: LoadingStatus;
     pageSize: number;
     pageNumber: number;
     numberOfPages: number;
     id: string | null;
     isDetailed: boolean;
     error: Error | null;
+    pageCharacters: Array<Character> | null;
 }
   
-const initialState = { search: '', loading: 'pending', pageSize: 25, pageNumber: 1, numberOfPages:0, isDetailed: false, error: null, id: null  } as PageState
+const initialState = { search: '', loadingMain: 'pending', loadingDetails: 'pending', pageSize: 20, pageNumber: 1, numberOfPages:0, isDetailed: false, error: null, id: null, pageCharacters: null  } as PageState
 
 const pageSlice = createSlice({
     name: 'page',
@@ -21,7 +26,13 @@ const pageSlice = createSlice({
         setSearch(state, action: PayloadAction<string>){
             return {
                 ...state,
+                loading: 'pending',
                 search: action.payload,
+                pageNumber: 1,
+                isDetailed: false,
+                error: null,
+                id: null,
+                pageCharacters: null,
             }
         },
         setNumberOfPages(state, action:PayloadAction<number>){
@@ -33,7 +44,7 @@ const pageSlice = createSlice({
         setCurrentPage(state, action: PayloadAction<number>) {
             return {
                 ...state,
-                currentPageNumber: action.payload,
+                pageNumber: action.payload,
                 isDetailed: false,
                 error: null,
             };
@@ -58,10 +69,19 @@ const pageSlice = createSlice({
         },
         setError(state, action:PayloadAction<Error | null>) {
             state.error = action.payload;
-        }
+        },
+        setStatusMain(state, action: PayloadAction<LoadingStatus>) {
+            state.loadingMain = action.payload
+        },
+        setStatusDetails(state, action: PayloadAction<LoadingStatus>) {
+            state.loadingDetails = action.payload
+        },
+        setPageCharacters(state, action: PayloadAction<Array<Character>>) {
+            state.pageCharacters = action.payload
+        },
     },
 })
 
-export const {setCurrentPage, setPageSize, showDetails, hideDetails, setError, setSearch, setNumberOfPages} = pageSlice.actions;
+export const {setCurrentPage, setPageSize, showDetails, hideDetails, setError, setSearch, setNumberOfPages, setStatusMain, setStatusDetails, setPageCharacters} = pageSlice.actions;
 
 export default pageSlice.reducer;

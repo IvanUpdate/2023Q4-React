@@ -8,37 +8,34 @@ import NotFound from '../notFound/notFound';
 import styles from './MainPage.module.css';
 import { useGetCharactersBySearchQuery } from '../../../../redux/services/rickApi';
 import { useAppDispatch, useAppSelector } from '../../hook';
-import { setNumberOfPages } from '../../../../redux/pageSlice';
-
+import { setError, setNumberOfPages } from '../../../../redux/pageSlice';
 
 const MainPage: React.FC = () => {
+  const { search, pageNumber, isDetailed, error } = useAppSelector(
+    (store) => store.page
+  );
 
-  const { search } = useAppSelector(store => store.page);
-
-  const {data, isLoading, isFetching} = useGetCharactersBySearchQuery(search);
-  const dispatch = useAppDispatch()
+  const { data, isLoading, isFetching, isSuccess } =
+    useGetCharactersBySearchQuery({ search, pageNumber });
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(setNumberOfPages(data?.results.length || 0))
+    dispatch(setNumberOfPages(data?.results.length || 0));
   }, [dispatch, data]);
 
+  if (error) throw error;
 
   return (
     <div className={styles.main}>
       <Search />
       <Pagination />
-      <div className={styles.results}>
-        {isLoading || isFetching && <Loader />}
-        {data?.results && data.results.length > 0 ? (
-          <>
-            <Layout /> <Outlet />
-          </>
-        ) : (
-          <NotFound />
-        )}
+      <div className={isDetailed ? styles.column : styles.results}>
+        {isLoading || (isFetching && <Loader />)}
+        {data?.results && isSuccess && data.results.length! > 0 && <Layout />}
+        <Outlet />
+        {!isSuccess && <NotFound />}
       </div>
-      <div className={styles.error}>
-        {/* <div className={styles.error} onClick={() => setError(new Error())}> */}
+      <div className={styles.error} onClick={() => dispatch(setError(new Error()))}>
         <p>Throw Error</p>
       </div>
     </div>

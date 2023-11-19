@@ -7,17 +7,11 @@ export const rickApi = createApi({
     baseUrl: 'https://rickandmortyapi.com/api/character/',
   }),
   endpoints: (builder) => ({
-    // getAllCharacters: builder.query<Characters, void>({
-    //   query: () => '',
-    // }),
-    getCharactersBySearch: builder.query<Characters, string>({
-      query: (search: string = '') =>
-        search==="" ? '' :`?name=${search.trim()}}`,
+    getCharactersBySearch: builder.query<Characters, { search: string; pageNumber: number }>({
+      query: (request) =>({
+        url: `?name=${request.search}&page=${request.pageNumber}`
+      })
     }),
-    // getCharactersBySearch: builder.query<Characters, string>({
-    //   query: (search: string = '', page: string = '3') =>
-    //     `/?name=${search.trim()}&?page=${page}`,
-    // }),
     getCharacterById: builder.query<Character, string>({
       query: (id) => `/${id}`,
     }),
@@ -27,18 +21,4 @@ export const rickApi = createApi({
 export const { useGetCharactersBySearchQuery, useGetCharacterByIdQuery } = rickApi;
 
 
-// export const yourApiSlice = createApi({
-//   ...,
-//   endpoints: (builder) => ({
-//     getListOfthings: builder.query({
-//       queryFn: (ids) => {
-//         const promises = ids.map((id) => {
-//           return someManualFetchFunction(id);
-//         });
-//         return Promise.all(promises).then((results) => {
-//           return { data: results }; // final result must have either the property "data" or the property "error"
-//         });
-//       },
-//     }),
-//   }),
-// });
+
