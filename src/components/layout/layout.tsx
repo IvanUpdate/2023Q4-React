@@ -1,40 +1,31 @@
-import { Outlet } from 'react-router-dom';
+import { useGetCharactersBySearchQuery } from '../../redux/services/rickApi';
 import CharacterItem from '../app/results/characterItem';
 import styles from './layout.module.css';
-import { useAppContext } from '../app/AppContext';
+import { useAppDispatch, useAppSelector } from '../app/hook';
+import { hideDetails } from '../../redux/pageSlice';
 
-type LayoutProps = {
-  changeCharacter: (id: number) => void;
-  exitDetails: () => void;
-};
+const Layout: React.FC = () => {
 
-const Layout: React.FC<LayoutProps> = ({
-  changeCharacter,
-  exitDetails,
-}) => {
-  const {
-    qtyPerPage,
-    searchParams,
-    isColumn,
-    results,
-  } = useAppContext();
+  const {data} = useGetCharactersBySearchQuery(useAppSelector(state => state.page.search));
+  const {pageNumber, pageSize ,isDetailed } = useAppSelector(state => state.page);
 
-  const page = Number(searchParams.get('page')) || 1;
-  const startIndex = (page - 1) * qtyPerPage;
-  const lastIndex = page * qtyPerPage;
+  const dispatch = useAppDispatch()
+
+  const startIndex = (pageNumber - 1) * pageSize;
+  const lastIndex = pageNumber * pageSize;
 
   const handleClick = () => {
-    exitDetails();
+    dispatch(hideDetails());
   };
 
   return (
-    <div className={isColumn ? styles.active_main : styles.non_active_main} >
+    <div className={isDetailed ? styles.active_main : styles.non_active_main} >
       <div
-        className={isColumn ? styles.non_active_results : styles.active_results}
+        className={isDetailed ? styles.non_active_results : styles.active_results}
         onClick={handleClick}
         data-testid="results-container"
       >
-        {results && results.slice(startIndex, lastIndex).map((person) => (
+        {data && data.results.slice(startIndex, lastIndex).map((person) => (
           <CharacterItem
             key={person.id}
             id={person.id}
@@ -44,12 +35,8 @@ const Layout: React.FC<LayoutProps> = ({
             location={person.location.name}
             image={person.image}
             species={person.species}
-            changeCharacter={changeCharacter}
           />
         ))}
-      </div>
-      <div>
-        <Outlet />
       </div>
     </div>
   );

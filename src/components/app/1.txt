@@ -1,0 +1,77 @@
+/* start App.js */
+import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
+// components imports ...
+
+const appRouter = createBrowserRouter(createRoutesFromElements(
+  <Route path='/' element={ <Root/> }>
+    <Route path='home' element={ <Home/> }/>
+  </Route>
+));
+
+// rest of code ...
+
+/* end App.js */
+
+/* start Root.js */
+import { Outlet } from 'react-router-dom';
+
+function Root() {
+  return (
+  	<>
+      <h1>Welcome</>
+      <Outlet/>  {/* indicates where <Home/> should be rendered within <Root> */}
+    </>
+  );
+  
+}
+
+export default Root;
+
+
+const appRouter = createBrowserRouter(createRoutesFromElements(
+<Routes>
+  <Route path='/' element={ <Root/> } errorElement = <ErorBoundary />>
+    <Route path='details' element={ <details/> }/>
+  </Route>
+  <Route path '*' element={NotFound} />
+<Routes>
+));
+
+loading ?  <Root>
+    <Search>
+    <Pagination>
+    <Outlet>
+    <Error Button>
+</Root>
+
+
+
+const slice = createSlice({
+  name: 'auth',
+  initialState: { user: null, token: null } as AuthState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      api.endpoints.login.matchFulfilled,
+      (state, { payload }) => {
+        state.token = payload.token
+        state.user = payload.user
+      }
+    )
+  },
+})
+
+
+export const restApi = createApi({
+  reducerPath: "restApi",
+  baseQuery: fetchBaseQuery({ baseUrl: 'https://pokeapi.co/api/v2/pokemon/' }),
+  endpoints: (builder) => ({
+    getPokemonByName: builder.query({
+      query: ({ name, signature }) => `${name}?signature=${signature}`,
+      serializeQueryArgs: ({ queryArgs }) => {
+        const { name } = queryArgs;
+        return { name }; // omit `signature` from the cache key
+      },
+    }),
+  }),
+});

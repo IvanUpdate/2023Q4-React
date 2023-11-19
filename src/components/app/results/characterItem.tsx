@@ -1,4 +1,5 @@
 import React from 'react';
+import { showDetails } from '../../../redux/pageSlice';
 import styles from './characterItem.module.css';
 
 type CharacterProps = {
@@ -9,7 +10,6 @@ type CharacterProps = {
   location: string;
   image: string;
   species: string;
-  changeCharacter: (id: number) => void;
 };
 
 const CharacterItem: React.FC<CharacterProps> = ({
@@ -20,15 +20,17 @@ const CharacterItem: React.FC<CharacterProps> = ({
   location,
   image,
   species,
-  changeCharacter,
 }) => {
-  const handleDivClick = () => {
-    changeCharacter(id);
+
+
+
+  const handleClickItem = () => {
+    showDetails(String(id));
   };
 
   return (
     <article>
-    <div className={styles.card} onClick={() => handleDivClick()} data-testid='div-container'>
+    <div className={styles.card} onClick={() => handleClickItem()} data-testid='div-container'>
       <p className={styles.intro}>{`${name} from ${location}`}</p>
       <img className={styles.image} src={image} alt={name} />
       <p className={styles.info}>{`Status: ${status}`}</p>

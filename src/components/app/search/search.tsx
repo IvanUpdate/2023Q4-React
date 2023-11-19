@@ -1,17 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './search.module.css';
-import { useAppContext } from '../AppContext';
+import { useAppDispatch, useAppSelector } from '../hook';
+import { setSearch } from '../../../redux/pageSlice';
 
-type SearchProps = {
-  handleSearch: (request: string) => void;
-};
-
-const Search: React.FC<SearchProps> = (props) => {
-  const { input, setInput } = useAppContext();
+const Search: React.FC = () => {
+  const [input, setInput] = useState(useAppSelector(state => state.page.search));
+  const dispatch = useAppDispatch();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
   };
+
+  const handleSearch = () => {
+    dispatch(setSearch(input));
+  }
 
   return (
     <div className={styles.search}>
@@ -29,7 +31,7 @@ const Search: React.FC<SearchProps> = (props) => {
         <button
           data-testid="search-button"
           className={styles.searchButton}
-          onClick={() => props.handleSearch(input)}
+          onClick={() => handleSearch()}
         >
           <div className={styles.apply}>
             <div className={`${styles.scale} ${styles.rotate1}`}>s</div>

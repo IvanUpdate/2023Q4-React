@@ -1,47 +1,34 @@
 import React, { useState } from 'react';
 import styles from './pagination.module.css';
 import { Link } from 'react-router-dom';
-import { useAppContext } from '../app/AppContext';
+import { useAppDispatch, useAppSelector } from '../app/hook';
+import { setCurrentPage, setPageSize } from '../../redux/pageSlice';
+import { useGetCharactersBySearchQuery } from '../../redux/services/rickApi';
 
-interface PaginationProps {
-  changePage: (page: number) => void; 
-  changeQtyPerPage: (qty: number) => void;
-}
+const Pagination: React.FC = () => {
 
-const Pagination: React.FC<PaginationProps> = ({
-  changeQtyPerPage,
-  changePage,
-}) => {
-
-  const {
-    currentPage,
-    qtyPerPage,
-    quantityResults,
-    searchParams,
-    setCurrentPage,
-  } = useAppContext();
+  const {pageNumber, pageSize, search} = useAppSelector(state => state.page);
+  const {data} = useGetCharactersBySearchQuery(search); 
+  const dispatch = useAppDispatch();
 
   const pageSizeOptions =[20,10,5];
-  //const [page, setPage] = useState<number>(currentPage);
-  const [selectedValue, setSelectedValue] = useState(qtyPerPage || pageSizeOptions[0]);
-  const lastPage = Math.ceil(quantityResults / qtyPerPage);
-  const pages = Array.from({ length: lastPage }, (_, index) => index + 1);
-  const search = searchParams.get('search') || null;
+  const [selectedValue, setSelectedValue] = useState(pageSize || pageSizeOptions[0]);
+  const numberOfPages = data?.info.pages || 0;
+  const pages = Array.from({ length: numberOfPages || 0 }, (_, index) => index + 1);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = Number(e.target.value);
     if (value !== selectedValue) {
+      dispatch(setPageSize(value))
       setSelectedValue(value);
-      changeQtyPerPage(value);
     }
   };
 
   const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-    changePage(newPage)
+    dispatch(setCurrentPage(newPage));
   };
 
-  if (quantityResults <= qtyPerPage) {
+  if (numberOfPages <= 1) {
     return null;
   }
 
@@ -59,32 +46,32 @@ const Pagination: React.FC<PaginationProps> = ({
       </div>
       <div className={styles.pages}>
         <span>Pages: </span>
-        {currentPage !== 1 && (
+        {pageNumber !== 1 && (
           <Link
-            to={search ? `?search=${search}&page=${currentPage - 1}` : `?page=${currentPage - 1}`}
+            to={search ? `?search=${search}&page=${pageNumber - 1}` : `?page=${pageNumber - 1}`}
             className={styles.paginationLink}
-            onClick={() => handlePageChange(currentPage - 1)}
+            onClick={() => handlePageChange(pageNumber - 1)}
             data-testid="pagination-link" 
           >
             <span>Prev</span>
           </Link>
         )}
-        {pages.map((pageNumber) => (
+        {pages.map((page) => (
           <Link
             to={search ? `?search=${search}&page=${pageNumber}` : `?page=${pageNumber}`}
             key={pageNumber}
-            className={currentPage === pageNumber ? styles.active : styles.paginationLink}
+            className={page === pageNumber ? styles.active : styles.paginationLink}
             onClick={() => handlePageChange(pageNumber)}
             data-testid="pagination-link" 
           >
-            {pageNumber}
+            {page}
           </Link>
         ))}
-        {lastPage !== currentPage && (
+        {numberOfPages !== pageNumber && (
           <Link
-            to={search ? `?search=${search}&page=${currentPage + 1}` : `?page=${currentPage + 1}`}
+            to={search ? `?search=${search}&page=${pageNumber + 1}` : `?page=${pageNumber + 1}`}
             className={styles.paginationLink}
-            onClick={() => handlePageChange(currentPage + 1)}
+            onClick={() => handlePageChange(pageNumber + 1)}
             data-testid='next' 
           >
             <span>Next</span>

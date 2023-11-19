@@ -1,18 +1,16 @@
-import { useAppContext } from '../AppContext';
+import { hideDetails } from '../../../redux/pageSlice';
+import { useGetCharacterByIdQuery } from '../../../redux/services/rickApi';
 import styles from './details.module.css';
 
-interface DetailsProps {
-  exitDetails: () => void;
+type DetailsProps = {
+  id: string;
 }
 
-const Details: React.FC<DetailsProps> = ({ exitDetails }) => {
-  
+const Details: React.FC<DetailsProps> = ({id}) => {
 
-  const {
-    character
-  } = useAppContext();
+  const {data} = useGetCharacterByIdQuery(id);
 
-  if (!character) {
+  if (!data) {
     return false;
   }
 
@@ -26,15 +24,15 @@ const Details: React.FC<DetailsProps> = ({ exitDetails }) => {
     location,
     image,
     episode,
-  } = character;
+  } = data;
 
-  const handleClick = () => {
-    exitDetails();
+  const handleExitIcon = () => {
+    hideDetails();
   };
 
   return (
     <div className={styles.card}>
-      <div data-testid="icon" className={styles.Icon} onClick={handleClick}>
+      <div data-testid="icon" className={styles.Icon} onClick={handleExitIcon}>
         <span></span>
         <span></span>
         <span></span>
