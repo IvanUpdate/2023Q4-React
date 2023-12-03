@@ -1,10 +1,16 @@
-/* src/styles.css */
-
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #f5f5f5;
   margin: 0;
   padding: 0;
+  background: #19e0bc;
+}
+
+#root {
+  margin-top: 50px;
+  display: flex;
+  align-items: top;
+  justify-content: center;
+  min-height: 100vh;
 }
 
 .container {
@@ -75,20 +81,4 @@ a {
 
 a:hover {
   color: #2575fc;
-}
-
-.user-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-.user-item {
-  width: 48%;
-  background-color: #fff;
-  padding: 15px;
-  margin-bottom: 20px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
 }

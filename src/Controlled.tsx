@@ -8,6 +8,7 @@ import './index.css';
 import makeBase64 from './utils/makeBase64';
 import AutoComplete from './Autocomplete';
 import { FormDataSchema, validationSchema } from './utils/schema';
+import styles from './Controlled.module.css';
 
 const Controlled: React.FC = () => {
   const {
@@ -17,6 +18,7 @@ const Controlled: React.FC = () => {
     setValue,
   } = useForm({
     resolver: yupResolver(validationSchema),
+    mode: 'onBlur',
   });
 
   const dispatch = useAppDispatch();
@@ -38,17 +40,17 @@ const Controlled: React.FC = () => {
     <div className="container">
       <h2>Controlled Component Form</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
+        <div className={styles.item}>
           <label>Name:</label>
           <input {...register('name')} type="text" required />
-          {errors.name && <p className="error">{errors.name?.message}</p>}
         </div>
-        <div>
+        {errors.name && <p className="error">{errors.name?.message}</p>}
+        <div className={styles.item}>
           <label>Age:</label>
           <input {...register('age')} type="number" required />
-          {errors.age && <p className="error">{errors.age?.message}</p>}
         </div>
-        <div>
+        {errors.age && <p className="error">{errors.age?.message}</p>}
+        <div className={styles.item}>
           <label>Email:</label>
           <input
             {...register('email')}
@@ -56,9 +58,9 @@ const Controlled: React.FC = () => {
             type="email"
             required
           />
-          {errors.email && <p className="error">{errors.email?.message}</p>}
         </div>
-        <div>
+        {errors.email && <p className="error">{errors.email?.message}</p>}
+        <div className={styles.item}>
           <label>Password:</label>
           <input
             {...register('password')}
@@ -66,11 +68,9 @@ const Controlled: React.FC = () => {
             type="password"
             required
           />
-          {errors.password && (
-            <p className="error">{errors.password?.message}</p>
-          )}
         </div>
-        <div>
+        {errors.password && <p className="error">{errors.password?.message}</p>}
+        <div className={styles.item}>
           <label>Confirm Password:</label>
           <input
             {...register('confirmPassword')}
@@ -78,11 +78,11 @@ const Controlled: React.FC = () => {
             type="password"
             required
           />
-          {errors.confirmPassword && (
-            <p className="error">{errors.confirmPassword?.message}</p>
-          )}
         </div>
-        <div>
+        {errors.confirmPassword && (
+          <p className="error">{errors.confirmPassword?.message}</p>
+        )}
+        <div className={styles.item}>
           <label>
             <input
               type="radio"
@@ -99,27 +99,27 @@ const Controlled: React.FC = () => {
             />
             Female
           </label>
-          {errors.gender && <p className="error">{errors.gender?.message}</p>}
         </div>
-        <div>
+        {errors.gender && <p className="error">{errors.gender?.message}</p>}
+        <div className={styles.item}>
           <label>Accept Terms and Conditions:</label>
           <input {...register('acceptTerms')} type="checkbox" required />
-          {errors.acceptTerms && (
-            <p className="error">{errors.acceptTerms?.message}</p>
-          )}
         </div>
-        <div>
+        {errors.acceptTerms && (
+          <p className="error">{errors.acceptTerms?.message}</p>
+        )}
+        <div className={styles.item}>
           <label>Picture:</label>
           <input {...register('picture')} type="file" required />
         </div>
-        <div>
+        <div className={styles.item}>
           <label>Country:</label>
           <AutoComplete
             options={countries}
             onSelect={(value) => setValue('country', value)}
           />
-          {errors.country && <p className="error">{errors.country.message}</p>}
         </div>
+        {errors.country && <p className="error">{errors.country.message}</p>}
         <button type="submit">Submit</button>
       </form>
     </div>

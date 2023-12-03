@@ -7,6 +7,7 @@ import makeBase64 from './utils/makeBase64';
 import AutoComplete from './Autocomplete';
 import { FormDataSchema, validationSchema } from './utils/schema';
 import { useAppDispatch, useAppSelector } from './hook';
+import styles from './Controlled.module.css';
 
 const Uncontrolled: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -28,12 +29,35 @@ const Uncontrolled: React.FC = () => {
 
   const countries = useAppSelector((store) => store.countries);
 
-  const handleChange = (
+  const handleChange = async (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLInputElement
     >
   ) => {
     const { name, value, type, checked, files } = e.target as HTMLInputElement;
+
+    if (type === 'checkbox') {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: checked,
+      }));
+      setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
+      return;
+    }
+    if (name === 'password') {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        confirmPassword: '',
+      }));
+    }
+    try {
+      await validationSchema.validateAt(name, { [name]: value });
+      setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
+    } catch (error) {
+      if (error instanceof yup.ValidationError) {
+        setErrors((prevErrors) => ({ ...prevErrors, [name]: error.message }));
+      }
+    }
 
     setFormData((prevData) => ({
       ...prevData,
@@ -45,6 +69,11 @@ const Uncontrolled: React.FC = () => {
     setFormData((prevData) => ({
       ...prevData,
       country: value,
+    }));
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      country: '',
     }));
   };
 
@@ -69,10 +98,10 @@ const Uncontrolled: React.FC = () => {
   };
 
   return (
-    <div className="container">
+    <div className="main">
       <h2>Uncontrolled Component Form</h2>
       <form>
-        <div>
+        <div className={styles.item}>
           <label>Name:</label>
           <input
             name="name"
@@ -81,9 +110,9 @@ const Uncontrolled: React.FC = () => {
             onChange={handleChange}
             required
           />
-          {errors.name && <p className="error">{errors.name}</p>}
         </div>
-        <div>
+        {errors.name && <p className="error">{errors.name}</p>}
+        <div className={styles.item}>
           <label>Age:</label>
           <input
             name="age"
@@ -92,9 +121,9 @@ const Uncontrolled: React.FC = () => {
             onChange={handleChange}
             required
           />
-          {errors.age && <p className="error">{errors.age}</p>}
         </div>
-        <div>
+        {errors.age && <p className="error">{errors.age}</p>}
+        <div className={styles.item}>
           <label>Email:</label>
           <input
             name="email"
@@ -105,7 +134,7 @@ const Uncontrolled: React.FC = () => {
           />
           {errors.email && <p className="error">{errors.email}</p>}
         </div>
-        <div>
+        <div className={styles.item}>
           <label>Password:</label>
           <input
             name="password"
@@ -114,9 +143,9 @@ const Uncontrolled: React.FC = () => {
             onChange={handleChange}
             required
           />
-          {errors.password && <p className="error">{errors.password}</p>}
         </div>
-        <div>
+        {errors.password && <p className="error">{errors.password}</p>}
+        <div className={styles.item}>
           <label>Confirm Password:</label>
           <input
             name="confirmPassword"
@@ -125,11 +154,11 @@ const Uncontrolled: React.FC = () => {
             onChange={handleChange}
             required
           />
-          {errors.confirmPassword && (
-            <p className="error">{errors.confirmPassword}</p>
-          )}
         </div>
-        <div>
+        {errors.confirmPassword && (
+          <p className="error">{errors.confirmPassword}</p>
+        )}
+        <div className={styles.item}>
           <label>
             <input
               type="radio"
@@ -150,9 +179,9 @@ const Uncontrolled: React.FC = () => {
             />
             Female
           </label>
-          {errors.gender && <p className="error">{errors.gender}</p>}
         </div>
-        <div>
+        {errors.gender && <p className="error">{errors.gender}</p>}
+        <div className={styles.item}>
           <label>Accept Terms and Conditions:</label>
           <input
             name="acceptTerms"
@@ -161,17 +190,17 @@ const Uncontrolled: React.FC = () => {
             onChange={handleChange}
             required
           />
-          {errors.acceptTerms && <p className="error">{errors.acceptTerms}</p>}
         </div>
-        <div>
+        {errors.acceptTerms && <p className="error">{errors.acceptTerms}</p>}
+        <div className={styles.item}>
           <label>Picture:</label>
           <input name="picture" type="file" onChange={handleChange} required />
         </div>
-        <div>
+        <div className={styles.item}>
           <label>Country:</label>
           <AutoComplete options={countries} onSelect={handleCountrySelect} />
-          {errors.country && <p className="error">{errors.country}</p>}
         </div>
+        {errors.country && <p className="error">{errors.country}</p>}
         <button type="button" onClick={onSubmit}>
           Submit
         </button>
