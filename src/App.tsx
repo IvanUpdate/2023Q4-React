@@ -1,25 +1,36 @@
-import { useState } from 'react';
-import './App.css';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useAppSelector } from './hook';
+import './index.css';
 
-function App() {
-  const [count, setCount] = useState(0);
+const App = () => {
+  const formData = useAppSelector((store) => store.form.formData);
 
   return (
-    <>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <Link to="/controlled">Go to Controlled Form</Link>
+      <br />
+      <Link to="/uncontrolled">Go to Uncontrolled Form</Link>
+
+      {formData && formData.length > 0 && (
+        <div>
+          <h3>Newly Entered Data</h3>
+          <div className="user-list">
+            {formData.map((user, index) => (
+              <div key={index} className="user-item">
+                <p>Name: {user.name}</p>
+                <p>Age: {user.age}</p>
+                <p>Email: {user.email}</p>
+                <p>Gender: {user.gender}</p>
+                <p>{user.picture}</p>
+                <p>Country: {user.country}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
-}
+};
 
 export default App;
