@@ -14,7 +14,7 @@ const Controlled: React.FC = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty, isValid },
     setValue,
   } = useForm({
     resolver: yupResolver(validationSchema),
@@ -37,7 +37,7 @@ const Controlled: React.FC = () => {
   };
 
   return (
-    <div className="container">
+    <div className={styles.main}>
       <h2>Controlled Component Form</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className={styles.item}>
@@ -120,7 +120,9 @@ const Controlled: React.FC = () => {
           />
         </div>
         {errors.country && <p className="error">{errors.country.message}</p>}
-        <button type="submit">Submit</button>
+        <button type="submit" className={!isValid ? styles.disabled : ''}>
+          Submit
+        </button>
       </form>
     </div>
   );

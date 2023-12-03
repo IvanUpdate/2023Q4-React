@@ -98,7 +98,7 @@ const Uncontrolled: React.FC = () => {
   };
 
   return (
-    <div className="main">
+    <div className={styles.main}>
       <h2>Uncontrolled Component Form</h2>
       <form>
         <div className={styles.item}>

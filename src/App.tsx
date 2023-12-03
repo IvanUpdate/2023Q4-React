@@ -7,7 +7,9 @@ const App = () => {
   const formData = useAppSelector((store) => store.form.formData);
 
   return (
-    <div className={styles.container}>
+    <div
+      className={formData.length > 0 ? styles.container_info : styles.container}
+    >
       <div className={styles.linkContainer}>
         <Link className={styles.link} to="/controlled">
           Go to Controlled Form
