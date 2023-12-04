@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useAppSelector } from './hook';
+import styles from './App.module.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const formData = useAppSelector((store) => store.form.formData);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div
+      className={formData.length > 0 ? styles.container_info : styles.container}
+    >
+      <div className={styles.linkContainer}>
+        <Link className={styles.link} to="/controlled">
+          Go to Controlled Form
+        </Link>
+        <Link className={styles.link} to="/uncontrolled">
+          Go to Uncontrolled Form
+        </Link>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
 
-export default App
+      {formData && formData.length > 0 && (
+        <div className={styles.content}>
+          <h3>Newly Entered Data:</h3>
+          <div className={styles.userList}>
+            {formData.map((user, index) => (
+              <div key={index} className={styles.userItem}>
+                <p>Name: {user.name}</p>
+                <p>Age: {user.age}</p>
+                <p>Email: {user.email}</p>
+                <p>Gender: {user.gender}</p>
+                <img src={user.picture} alt="user" />
+                <p>Country: {user.country}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default App;

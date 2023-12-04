@@ -1,0 +1,13 @@
+.item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.main {
+  min-width: 600px;
+}
+
+.disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
